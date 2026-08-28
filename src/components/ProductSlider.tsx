@@ -1,18 +1,43 @@
 import SectionHeader from './SectionHeader';
 import ProductCard from './ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRef, useState, MouseEvent } from 'react';
+import { useRef, useState, MouseEvent, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { productsDatabase } from '../data/products';
 
-export default function ProductSlider({ title, isBestSeller = false }: { title: string, isBestSeller?: boolean }) {
+export default function ProductSlider({ title, isBestSeller = false, autoScrollInterval = 3500 }: { title: string, isBestSeller?: boolean, autoScrollInterval?: number }) {
   const { language } = useLanguage();
   
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isDown, setIsDown] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
+  useEffect(() => {
+    if (isHovered || isDown) return;
+    const timer = setInterval(() => {
+      if (sliderRef.current) {
+        const slider = sliderRef.current;
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        
+        if (language === 'ar') {
+          if (Math.abs(slider.scrollLeft) >= maxScroll - 10) {
+            slider.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            slider.scrollBy({ left: -200, behavior: 'smooth' });
+          }
+        } else {
+          if (slider.scrollLeft >= maxScroll - 10) {
+            slider.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            slider.scrollBy({ left: 200, behavior: 'smooth' });
+          }
+        }
+      }
+    }, autoScrollInterval);
+    return () => clearInterval(timer);
+  }, [language, isHovered, isDown, autoScrollInterval]);
 
   const handleMouseDown = (e: MouseEvent) => {
     if (!sliderRef.current) return;
@@ -36,7 +61,7 @@ export default function ProductSlider({ title, isBestSeller = false }: { title: 
     if (!isDown || !sliderRef.current) return;
     e.preventDefault();
     const x = e.pageX - sliderRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll-fast
+    const walk = (x - startX) * 2;
     sliderRef.current.scrollLeft = scrollLeft - walk;
   };
 
@@ -47,21 +72,25 @@ export default function ProductSlider({ title, isBestSeller = false }: { title: 
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-8 overflow-hidden relative">
+    <section 
+      className="max-w-7xl mx-auto px-4 py-8 overflow-hidden relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex items-center justify-between border-b border-gray-100 pb-2 mb-6">
         <SectionHeader title={title} />
         <div className="flex gap-2">
           <button 
-            onClick={() => scrollLeftBy(language === 'en' ? -300 : 300)}
-            className="w-10 h-10 rounded-full bg-[#f8f9fa] flex items-center justify-center hover:bg-[#e6f0f9] text-[#1f2e3f] transition-colors border border-gray-100"
+            onClick={() => scrollLeftBy(language === 'en' ? -200 : 200)}
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#f8f9fa] flex items-center justify-center hover:bg-[#e6f0f9] text-[#1f2e3f] transition-colors border border-gray-100"
           >
-            {language === 'en' ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+            {language === 'en' ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
           <button 
-            onClick={() => scrollLeftBy(language === 'en' ? 300 : -300)}
-            className="w-10 h-10 rounded-full bg-[#f8f9fa] flex items-center justify-center hover:bg-[#e6f0f9] text-[#1f2e3f] transition-colors border border-gray-100"
+            onClick={() => scrollLeftBy(language === 'en' ? 200 : -200)}
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#f8f9fa] flex items-center justify-center hover:bg-[#e6f0f9] text-[#1f2e3f] transition-colors border border-gray-100"
           >
-            {language === 'en' ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            {language === 'en' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
         </div>
       </div>
@@ -72,11 +101,18 @@ export default function ProductSlider({ title, isBestSeller = false }: { title: 
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
-        className={`flex overflow-x-auto gap-4 md:gap-6 pb-6 pt-2 hide-scrollbar cursor-grab ${isBestSeller ? 'snap-x snap-mandatory' : ''}`}
+        className="flex overflow-x-auto gap-3 md:gap-4 pb-4 pt-2 hide-scrollbar cursor-grab"
       >
-        {productsDatabase.slice(isBestSeller ? 0 : 15, isBestSeller ? 4 : 25).map((item, idx) => (
-          <div key={item.id} className={isBestSeller ? 'snap-center min-w-full flex-shrink-0' : 'w-[220px] sm:w-[260px] md:w-[280px] flex-shrink-0'}>
-            <ProductCard title={item.title} category={item.category} viewMode={isBestSeller ? 'large' : 'grid'} />
+        {productsDatabase.slice(isBestSeller ? 0 : 15, isBestSeller ? 12 : 30).map((item) => (
+          <div key={item.id} className="w-[140px] sm:w-[160px] md:w-[200px] flex-shrink-0">
+            <ProductCard 
+              title={item.title} titleEn={item.titleEn} 
+              category={item.category} categoryEn={item.categoryEn} 
+              image={item.image}
+              description={item.description} descriptionEn={item.descriptionEn}
+              size={item.size}
+              price={item.price}
+            />
           </div>
         ))}
       </div>

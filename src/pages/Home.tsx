@@ -27,8 +27,8 @@ export default function Home() {
       >
         <HeroBanners />
         <Categories />
-        <ProductSlider title={t('bestseller')} isBestSeller={true} />
-        <ProductSlider title={t('new_arrivals')} />
+        <ProductSlider title={t('bestseller')} isBestSeller={true} autoScrollInterval={5000} />
+        <ProductSlider title={t('new_arrivals')} autoScrollInterval={4000} />
         <PromoBanner />
         <LatestOffers />
         <AboutSection />
