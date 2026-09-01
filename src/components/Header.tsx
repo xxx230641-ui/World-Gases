@@ -38,10 +38,17 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredResults = productsDatabase.filter(item => 
-    item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    item.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredResults = productsDatabase.filter(item => {
+    const q = searchQuery.toLowerCase();
+    return (
+      (item.title && item.title.toLowerCase().includes(q)) || 
+      (item.category && item.category.toLowerCase().includes(q)) ||
+      (item.titleEn && item.titleEn.toLowerCase().includes(q)) ||
+      (item.categoryEn && item.categoryEn.toLowerCase().includes(q)) ||
+      (item.description && item.description.toLowerCase().includes(q)) ||
+      (item.descriptionEn && item.descriptionEn.toLowerCase().includes(q))
+    );
+  });
 
   return (
     <>
@@ -106,8 +113,8 @@ export default function Header() {
                           )}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-sm font-bold text-gray-800">{item.title}</span>
-                          <span className="text-xs text-[#f97316] font-medium mt-1">{item.category}</span>
+                          <span className="text-sm font-bold text-gray-800">{language === 'en' && item.titleEn ? item.titleEn : item.title}</span>
+                          <span className="text-xs text-[#f97316] font-medium mt-1">{language === 'en' && item.categoryEn ? item.categoryEn : item.category}</span>
                         </div>
                       </li>
                     ))}
@@ -151,7 +158,7 @@ export default function Header() {
             >
               {/* Sidebar Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-[#1e293b] text-white">
-                <span className="font-bold text-lg">عالم الغازات</span>
+                <span className="font-bold text-lg">{t('world_of_gas') || 'عالم الغازات'}</span>
                 <button 
                   onClick={() => setIsSidebarOpen(false)}
                   className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
@@ -178,7 +185,7 @@ export default function Header() {
                   >
                     <div className="flex items-center gap-3">
                       <LayoutGrid size={20} />
-                      <span>{t('categories') || 'الفئات'}</span>
+                      <span>{t('categories') || 'الأقسام'}</span>
                     </div>
                     {isCategoriesOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </div>
@@ -218,7 +225,7 @@ export default function Header() {
                 </button>
                 
                 <div className="mt-8 border-t border-gray-100 pt-8 flex flex-col gap-4 px-4">
-                  <p className="text-sm font-bold text-gray-500 mb-2">تواصل معنا</p>
+                  <p className="text-sm font-bold text-gray-500 mb-2">{t('contact_us_now') || 'تواصل معنا'}</p>
                   
                   <a 
                     href="https://wa.me/962795155953" 
@@ -227,7 +234,7 @@ export default function Header() {
                     className="flex items-center gap-3 text-[#25D366] hover:opacity-80 transition-opacity font-bold"
                   >
                     <WhatsAppIcon />
-                    <span>واتساب</span>
+                    <span>{t('whatsapp') || 'واتساب'}</span>
                   </a>
                   
                   <a 
@@ -237,7 +244,7 @@ export default function Header() {
                     className="flex items-center gap-3 text-[#1877F2] hover:opacity-80 transition-opacity font-bold"
                   >
                     <FacebookIcon />
-                    <span>فيسبوك</span>
+                    <span>{t('facebook') || 'فيسبوك'}</span>
                   </a>
                 </div>
               </div>

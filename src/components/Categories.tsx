@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import SectionHeader from './SectionHeader';
 import { useRef, useState, MouseEvent, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { Lottie } from 'lottie-react';
+import Lottie from 'react-lottie-player';
 import { motion } from 'framer-motion';
 
 const categories = [
@@ -92,7 +92,7 @@ export default function Categories() {
             onClick={() => setShowCat(!showCat)}
             className="bg-[#f97316] hover:bg-[#ea580c] transition-colors text-white px-4 md:px-6 h-10 rounded-md flex items-center gap-2 font-medium shadow-sm"
           >
-            <span>{t('categories') || 'الفئات'}</span>
+            <span>{t('categories') || 'الأقسام'}</span>
             <ChevronDown size={16} className={`transition-transform ${showCat ? 'rotate-180' : ''}`} />
           </button>
           
@@ -127,10 +127,13 @@ export default function Categories() {
         {categories.map((cat, idx) => (
           <Link to={`/category/${encodeURIComponent(language === 'en' ? cat.fullNameEn : cat.fullName)}`} key={idx} className="flex flex-col items-center gap-4 min-w-[130px] md:min-w-[160px] cursor-pointer group pointer-events-auto">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-[#f8f9fa] flex items-center justify-center group-hover:bg-[#fff7ed] transition-colors border-2 border-transparent group-hover:border-[#f97316] shadow-sm relative overflow-hidden">
+              {(cat as any).bgImage && <img src={(cat as any).bgImage} alt={cat.shortName} className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-multiply group-hover:opacity-40 transition-opacity z-0" />}
+              <div className="z-10 relative">
+
               {lottieData[cat.shortName] ? (
                 <Lottie 
                   animationData={lottieData[cat.shortName]} 
-                  loop={true} 
+                  loop={true} play={true} 
                   className="w-16 h-16 md:w-20 md:h-20"
                 />
               ) : (
@@ -144,6 +147,8 @@ export default function Categories() {
                   <cat.icon size={48} className="text-[#f97316] opacity-80" strokeWidth={1.5} />
                 </motion.div>
               )}
+            
+              </div>
             </div>
             <span className="text-sm font-bold text-center text-[#666e77] group-hover:text-[#f97316] transition-colors">{language === 'en' ? cat.shortNameEn : cat.shortName}</span>
           </Link>

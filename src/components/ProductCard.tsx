@@ -9,6 +9,9 @@ export default function ProductCard({
   description,
   size,
   price,
+  titleEn,
+  categoryEn,
+  descriptionEn,
 }: { 
   title: string, 
   category: string, 
@@ -16,12 +19,19 @@ export default function ProductCard({
   description?: string,
   size?: string,
   price?: string,
-  viewMode?: string 
+  viewMode?: string,
+  titleEn?: string,
+  categoryEn?: string,
+  descriptionEn?: string,
 }) {
   const { t, language } = useLanguage();
   
+  const displayTitle = language === 'en' && titleEn ? titleEn : title;
+  const displayCategory = language === 'en' && categoryEn ? categoryEn : category;
+  const displayDescription = language === 'en' && descriptionEn ? descriptionEn : description;
+
   return (
-    <Link to={`/category/${encodeURIComponent(category)}`} className="block w-full h-full">
+    <Link to={`/category/${encodeURIComponent(language === 'en' && categoryEn ? categoryEn : category)}`} className="block w-full h-full">
       <motion.div 
         whileHover={{ y: -4, boxShadow: '0 8px 30px rgba(0,0,0,0.06)' }}
         transition={{ duration: 0.2 }}
@@ -30,7 +40,7 @@ export default function ProductCard({
         {/* Product Image */}
         <div className="w-full aspect-[4/3] bg-white rounded-lg flex items-center justify-center overflow-hidden border border-gray-50 flex-shrink-0 relative">
           {image && image !== 'قالب صورة' ? (
-            <img src={image} alt={title} className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" />
+            <img src={image} alt={displayTitle} className="w-full h-full object-contain hover:scale-105 transition-transform duration-500" />
           ) : (
             <div className="w-full h-full bg-gray-50 flex items-center justify-center">
               <span className="text-gray-400 text-[10px] sm:text-xs font-medium text-center px-2">{t('product_image_placeholder') || 'قالب صورة'}</span>
@@ -40,14 +50,14 @@ export default function ProductCard({
 
         {/* Product Info */}
         <div className="flex flex-col flex-1 px-1">
-          <span className="text-[9px] sm:text-[10px] text-[#f97316] font-bold truncate mb-0.5">{category}</span>
+          <span className="text-[9px] sm:text-[10px] text-[#f97316] font-bold truncate mb-0.5">{displayCategory}</span>
           <h3 className="font-bold text-[#1f2e3f] text-xs sm:text-sm leading-snug line-clamp-1 mb-1.5">
-            {title}
+            {displayTitle}
           </h3>
           
-          {description && (
+          {displayDescription && (
             <p className={`text-gray-500 text-[10px] sm:text-[11px] leading-relaxed mb-2 line-clamp-2 ${language === 'en' ? 'text-left' : 'text-right'}`}>
-              {description}
+              {displayDescription}
             </p>
           )}
           
@@ -55,12 +65,12 @@ export default function ProductCard({
             <div className="mt-auto pt-2 flex flex-wrap items-center justify-between border-t border-gray-100 gap-1">
               {size && (
                 <span className="text-[9px] sm:text-[10px] font-bold text-gray-600 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 whitespace-nowrap">
-                  {size}
+                  {language === 'en' ? size.replace('سم', 'cm') : size}
                 </span>
               )}
               {price && (
                 <span className="text-[11px] sm:text-[13px] font-black text-[#f97316] whitespace-nowrap">
-                  {price}
+                  {language === 'en' ? price.replace('دينار', 'JD') : price.replace('JD', 'دينار')}
                 </span>
               )}
             </div>

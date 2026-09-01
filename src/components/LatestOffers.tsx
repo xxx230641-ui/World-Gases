@@ -13,15 +13,15 @@ export default function LatestOffers() {
   const offers = [
     {
       id: 1,
-      label: 'خصم خاص'
+      label: t('special_discount') || 'خصم خاص'
     },
     {
       id: 2,
-      label: 'عرض جديد'
+      label: t('new_offer') || 'عرض جديد'
     },
     {
       id: 3,
-      label: 'تخفيضات الكبرى'
+      label: t('mega_sale') || 'تخفيضات الكبرى'
     }
   ];
 
@@ -88,7 +88,7 @@ export default function LatestOffers() {
             transition={{ duration: 0.5 }}
             className="absolute inset-0 w-full h-full flex items-center justify-center"
           >
-            <span className="text-gray-400 font-medium text-lg">قالب عرض</span>
+            <span className="text-gray-400 font-medium text-lg">{t('latest_offer_placeholder') || 'قالب عرض'}</span>
             
             <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 z-10 text-white">
               <span className="bg-[#eab308] text-[#1f2e3f] px-3 py-1 rounded text-sm md:text-base font-bold inline-block mb-2 md:mb-3">{offers[currentIndex].label}</span>
